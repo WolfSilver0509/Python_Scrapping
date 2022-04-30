@@ -9,7 +9,9 @@ soup = BeautifulSoup(page.content, 'html.parser')
 #categories = cat.findChildren("a")
 #for div in cat:
 
-div = soup.find("div", { "class" : "side_categories" })
-cat = div.find_all("a") # returns a list of all <a> children of li
+#div = soup.find("div", { "class" : "side_categories" })
+#cat = div.find_all("a") # returns a list of all <li> children of li
 
-print(cat)
+#ul = soup.find("ul", {"class":"nav nav-list"})
+#cat = ul.find_all("ul")
+print(soup)
