@@ -1,17 +1,44 @@
+# Importation des librairies pandas request et beautifulsoup
+import pandas as pd
 import requests
-from bs4 import BeautifulSoup
+
+from bs4 import BeautifulSoup as bs
+
+# Listes mise dans la variables tous les livres
+all_books = []
+
+# Récupération de l'URL
 url = "https://books.toscrape.com/index.html"
+# Telechargement de la page index
 page = requests.get(url)
-# Voir le code html source
-soup = BeautifulSoup(page.content, 'html.parser')
-#cat = soup.find_all("div", class_="side_categories")
-#cat = soup.find("div", { "class" : "side_categories" }).findAll("a", recursive=False)
-#categories = cat.findChildren("a")
-#for div in cat:
+# création de l'objet Soup
+soup = bs(page.text, "lxml")
+# A partir de là travaille d'inspection sur le sit index
 
-#div = soup.find("div", { "class" : "side_categories" })
-#cat = div.find_all("a") # returns a list of all <li> children of li
+# Récupération de tous les liens des livres
+links = []
+listings = soup.find_all(class_ ="product_pod")
+# A partir de chaques liens récupérer on peut obtenir le lien de livres
+for listing in listings:
+    target_lnk = listing.find("h3").a.get("href")
+    base_url = "https://books.toscrape.com/"
+    complete_lnk = base_url + target_lnk
+    #print(complete_lnk) # A partir de là nous avons tous les liens pour les livres répétorier sur la page actuelle
+    links.append(complete_lnk)
 
-#ul = soup.find("ul", {"class":"nav nav-list"})
-#cat = ul.find_all("ul")
-print(soup)
+#Extraire les informations de chaques liens
+
+for link in links:
+    response = requests.get(link).text
+    book_soup = bs(response,"lxml")
+
+    title = book_soup.find(class_="col-sm-6 product_main").h1. text.strip()
+    price = book_soup.find(class_="col-sm-6 product_main").p. text.strip()
+    inStock = book_soup.find(class_="instock availability").text.strip()
+    #img = book_soup.find(class_="item active").text.strip()
+
+    #print(title, price, inStock) #Verification que tout fonctionne
+    book = {"title":title,"price":price,"inStock":inStock}
+    all_books.append(book)
+
+    print(len(all_books))
